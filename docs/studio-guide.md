@@ -1,55 +1,55 @@
 # Studio Guide
 
-Studio widgets present plugin data inside the KB Labs UI. This document explains how to add widgets, menus, and layouts.
+Studio integration is optional today—AI Docs focuses on CLI/workflow experiences. When Studio widgets are needed (e.g., to visualise drift reports), follow this playbook.
 
-## Directory layout
+## Directory layout (when implemented)
 
 ```
-packages/plugin-cli/src/studio/
+packages/ai-docs-plugin/src/studio/
 ├── widgets/
-│   ├── hello-widget.tsx
-│   └── index.ts
+│   └── drift-widget.tsx
 └── index.ts
 ```
 
-- **widgets/** – React components (or config objects) which render REST output.
-- **index.ts** – re-exports for consumers that import widgets directly.
+- **widgets/** – React components fed by REST endpoints.
+- **index.ts** – convenient re-export for tooling or future packages.
 
 ## Adding a widget
 
-1. Create `src/studio/widgets/<name>-widget.tsx` exporting a React component.
-2. Re-export the widget from `src/studio/widgets/index.ts` and `src/studio/index.ts` if library users should import it.
-3. Add the widget file to the `entry` array in `tsup.config.ts` so it is bundled with declarations.
-4. Update `src/manifest.v2.ts` `studio.widgets` with:
-   - unique `id`
-   - `kind`, `title`, `description`
-   - `data.source` referencing the REST route (`type: 'rest', routeId, method`)
-   - optional `layoutHint` and widget-specific options.
-5. Add snapshot or render tests under `packages/plugin-cli/tests/studio/` if the widget contains logic.
+1. Create `src/studio/widgets/<name>-widget.tsx` exporting a React component (or config object).
+2. Re-export it from `src/studio/widgets/index.ts` (and `src/studio/index.ts` if required).
+3. Add the widget file to `tsup.config.ts` `entry`.
+4. Register it in `manifest.v2.ts` under `studio.widgets` with:
+   - unique `id`, `title`, `description`;
+   - `kind` (`react`, `chart`, etc.);
+   - `data.source` referencing a REST route (`type: 'rest', routeId, method`).
+5. Cover render logic with tests in `packages/ai-docs-plugin/tests/studio/`.
 
 ## Menus and layouts
 
-- Menus live under `studio.menus` in the manifest. They should point to `/plugins/<id>/<view>` routes rendered by Studio.
-- Layouts define dashboard presets. Start with a `grid` layout specifying `cols` and `rowHeight`.
+- Define Studio menus under `manifest.studio.menus` to surface widgets within the UI.
+- Layout presets (grids, stacks) help teams drop the widget onto dashboards quickly.
 
 ## Styling guidelines
 
-- Keep styling inline or in small helper utilities to avoid large CSS dependencies.
-- Prefer shared UI components from `@kb-labs/shared-cli-ui` when available.
-- Widgets should remain presentational; fetch data via REST handlers and manifest wiring.
+- Prefer KB Labs shared UI components (`@kb-labs/shared-cli-ui`).
+- Keep widgets presentational—fetch data through REST routes declared in the manifest.
+- Expose configuration via props so the same widget can render different profiles (e.g., internal vs. public docs plans).
 
-## Example widget
+## Example snippet
 
 ```tsx
-export const HelloWidget: FC<HelloWidgetProps> = ({ message, target }) => (
-  <section style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1rem' }}>
-    <h2 style={{ margin: 0 }}>Hello from Plugin Template</h2>
-    <p style={{ margin: 0 }}>{message}</p>
-    {target ? <small style={{ color: '#666' }}>Target: {target}</small> : null}
+export const DriftWidget = ({ driftScore, entries }: DriftWidgetProps) => (
+  <section>
+    <h2>Docs Drift</h2>
+    <p>Score: {driftScore}/100</p>
+    <ul>
+      {entries.slice(0, 5).map((entry) => (
+        <li key={entry.path}>{entry.path} — {entry.status}</li>
+      ))}
+    </ul>
   </section>
 );
 ```
 
-Tie this widget to `/v1/plugins/template/hello` via `data.source.routeId` and add it to a layout to expose it in Studio.
-
-
+Wire the widget to a REST endpoint (e.g., `/v1/ai-docs/drift`) via `data.source`, then add it to a layout to expose it inside Studio.

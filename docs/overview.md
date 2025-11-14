@@ -1,20 +1,21 @@
-# KB Labs Plugin Template Overview
+# KB Labs AI Docs Overview
 
-The KB Labs Plugin Template provides a production-ready workspace for authoring plugins that expose CLI commands, REST endpoints, and KB Studio widgets. It demonstrates a pragmatic Domain-Driven Design layering model while embracing the tooling standards enforced across the KB ecosystem.
+AI Docs automates the engineering-docs lifecycle (bootstrap → plan → generate → audit) on top of Mind, the workflow engine, and DevKit standards.
 
-## Why this template exists
+## Why AI Docs
 
-- **Consistency** – give plugin authors a repeatable folder layout, manifest shape, and quality bar.
-- **Speed** – scaffold a working HelloWorld plugin with minimal work and evolve from there.
-- **Education** – document best practices learned from existing plugins such as `kb-labs-mind` and `kb-labs-devlink`.
+- **Bootstrap** — `kb ai-docs:init` scaffolds `docs/ai-docs` plus config defaults in seconds.
+- **Plan** — `kb ai-docs:plan` analyses existing docs/code and emits a canonical TOC with gaps.
+- **Generate** — `kb ai-docs:generate` produces or updates sections via Mind context + mock/future LLM providers, with dry-run/suggest-only guarantees.
+- **Audit** — `kb ai-docs:audit` calculates drift-score and reports what is missing, outdated, or in-sync.
 
-## What you get out of the box
+## Repository contents
 
-- `packages/plugin-cli`: reference plugin package with manifest v2, CLI/REST/Studio layers, tests, and build scripts.
-- `packages/contracts`: lightweight public contracts package describing artifacts, commands, workflows, and API guarantees (sections are optional—use only what your plugin ships).
-- `docs/`: guides for extending each surface plus architectural conventions. Start with [`template-setup-guide.md`](./template-setup-guide.md) when creating a new plugin instance.
-- `scripts/`: devkit sync wrapper and sandboxes (CLI, REST, Studio) for manual testing.
-- `README.md`: quick start instructions and repository layout.
+- `packages/ai-docs-plugin` — CLI, workflow steps, setup handler, Mind adapter, mock LLM, application/domain layers.
+- `packages/ai-docs-contracts` — manifests and Zod schemas for artifacts (`plan.json`, metadata, drift), commands, workflows, future APIs.
+- `docs/` — guides for setup, getting started, architecture, CLI usage, FAQ.
+- `scripts/` — devkit helpers (paths + sync) shared across packages.
+- `IMPLEMENTATION_NOTES.md` — running progress/status document.
 
-Use this repository as a blueprint for new plugins or fork it to create product-specific variations.
+Use this repo as the reference implementation when integrating AI Docs with KB Labs products or when authoring similar documentation plugins with strong artifact guarantees and observability.
 

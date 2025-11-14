@@ -2,38 +2,31 @@
 
 ## Build fails with “Cannot resolve @kb-labs/...”
 
-The template expects sibling repositories (`kb-labs-plugin`, `kb-labs-shared`, `kb-labs-devkit`) to be available for local linking. Verify the relative paths in `packages/plugin-cli/package.json`, or replace them with published package versions if you prefer registry installs.
+AI Docs expects sibling repos (`kb-labs-plugin`, `kb-labs-shared`, `kb-labs-devkit`, `kb-labs-setup-engine`) to be linked locally. Double-check `pnpm-workspace.yaml`, `tsconfig.paths.json`, or install published versions if you’re outside the mono workspace.
 
-## `pnpm lint` complains about missing files in the project service
+## `pnpm lint` / `tsc` complain about missing files
 
-Make sure test files are included in `tsconfig.json`. The template already includes `tests` in the `include` array. If you move or rename directories, adjust the configuration accordingly.
+Ensure `packages/ai-docs-plugin/tsconfig.json` includes both `src` and `tests`. When you move tests, update `include`/`exclude` and any path aliases.
 
-## `tsc --noEmit` finds files outside `rootDir`
+## CLI says “Build artifacts missing”
 
-The template config removes explicit `rootDir` to avoid conflicts. If you reintroduce it, ensure it covers both `src` and `tests`, or move tests under `src/__tests__`.
+Run `pnpm --filter @kb-labs/ai-docs-plugin run build` before invoking `pnpm kb ai-docs:<command>`. The kb runtime loads bundles from `packages/ai-docs-plugin/dist/`.
 
-## Sandbox scripts report “Build artifacts missing”
+## CLI prints nothing
 
-Run `pnpm --filter @kb-labs/plugin-template-cli run build` first. Sandboxes operate on compiled outputs in `packages/plugin-cli/dist/`.
+All commands write to `stdout`. If you pipe output to `/dev/null`, nothing will show up. Add `--json` for a deterministic payload in scripts/CI.
 
-## CLI command exits without output
+## Setup didn’t touch kb.config.json
 
-The HelloWorld command prints to `stdout`. If you run it via Node directly, ensure `process.stdout` is not swapped out by your shell. Using the provided sandbox (`pnpm sandbox:cli`) mimics the plugin runtime behaviour.
+The setup handler relies on `ctx.runtime.config.ensureSection`. If you ran `kb ai-docs setup --dry-run`, no changes were applied. Re-run without `--dry-run` (or with `--force` to overwrite existing sections).
 
-## REST handler logs unexpected context
+## Drift score is always 100
 
-The sandbox passes `console.log` as the runtime logger. In the actual plugin runtime, `ctx.runtime.log` is provided by the host. To simulate production logs, adjust `scripts/sandbox/rest-sandbox.mjs`.
-
-## Studio sandbox prints raw markup
-
-`sandbox:studio` renders the widget using `react-dom/server` so you can inspect the structure quickly. For visual verification, import the component into a React playground and feed it the same props.
+The repo currently uses a mock drift detector. Once Mind and repo-scanner integrations land, the score will reflect reality. Inspect `packages/ai-docs-plugin/src/domain/drift.ts` to see how the mock calculation works.
 
 ## Manifest change checklist
 
-1. Update `src/manifest.v2.ts`.
-2. Ensure new entries are listed in `tsup.config.ts`.
-3. Adjust permissions and quotas as needed.
-4. Add tests and sandbox examples if runtime behaviour changed.
-5. Document the update in `docs/` (guides or ADRs).
-
-
+1. Update `src/manifest.v2.ts` (CLI metadata, setup permissions, artifacts).
+2. Add new entry points to `tsup.config.ts`.
+3. Keep `packages/ai-docs-contracts` (schemas + manifest) in sync with artifact/command changes.
+4. Write tests and documentation for the new behaviour.

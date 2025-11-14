@@ -1,60 +1,54 @@
 # REST Guide
 
-Use this guide to add or modify REST endpoints in the plugin template.
+AI Docs currently focuses on CLI + workflow surfaces. When a REST surface becomes necessary (e.g., Studio widgets pulling plan summaries), use this checklist to add routes safely.
 
-## Directory layout
+## Directory layout (when needed)
 
 ```
-packages/plugin-cli/src/rest/
+packages/ai-docs-plugin/src/rest/
 ├── handlers/
-│   └── hello-handler.ts
+│   └── docs-plan-handler.ts
 └── schemas/
-    └── hello-schema.ts
+    ├── docs-plan-request.schema.ts
+    └── docs-plan-response.schema.ts
 ```
 
-- **schemas/** – request/response contracts defined with Zod.
-- **handlers/** – executable functions invoked by the plugin runtime.
+- **schemas/** – Zod request/response contracts (re-exported for tooling).
+- **handlers/** – executable functions referenced from the manifest.
 
 ## Adding a route
 
 1. **Define schemas**
-   - Create `src/rest/schemas/<resource>-schema.ts`.
-   - Export `RequestSchema` and `ResponseSchema` via Zod and associated `z.infer` types.
+   - Add `src/rest/schemas/<resource>-schema.ts`.
+   - Export `RequestSchema`, `ResponseSchema`, and types inferred via `z.infer`.
 2. **Implement handler**
-   - Add `src/rest/handlers/<resource>-handler.ts`.
-   - Parse input with `RequestSchema.parse`, call application use-cases, return `ResponseSchema.parse(...)`.
-   - Log via `ctx.runtime?.log` when useful.
-3. **Update manifest**
-   - Append a route entry to `src/manifest.v2.ts`.
-   - Provide `method`, `path`, schema refs, handler path, and permissions (fs/net/env/quotas).
-4. **Expose build output**
-   - Ensure `tsup.config.ts` includes the handler and schema in `entry`.
-5. **Write tests**
-   - Create `packages/plugin-cli/tests/rest/<resource>-handler.spec.ts`.
-   - Cover success and error cases with Vitest.
+   - Create `src/rest/handlers/<resource>-handler.ts`.
+   - Validate input via the request schema, call the relevant use-case (`planDocs`, `generateDocs`, etc.), and return response data parsed by the response schema.
+   - Use `ctx.runtime?.log` for observability.
+3. **Register in manifest**
+   - Append a route to `manifest.v2.ts` under `rest.routes`.
+   - Provide `method`, `path`, schema refs, handler path, and required permissions.
+4. **Bundle entry**
+   - Add the handler (and schema if needed) to `tsup.config.ts` `entry`.
+5. **Test**
+   - Create `packages/ai-docs-plugin/tests/rest/<resource>.spec.ts`.
+   - Cover success + validation failures.
 
 ## Permissions checklist
 
-- Declare only the filesystem paths the handler requires.
-- Allowlisted env vars should be explicit (e.g., `KB_LABS_REPO_ROOT`).
-- Prefer conservative quotas (`timeoutMs`, `memoryMb`, `cpuMs`).
-- Document changes in `docs/rest-guide.md` or ADRs if they affect contracts.
+- Limit `fs` allow-lists to files actually read/written by the handler.
+- Keep `net` and `env` scopes minimal (most handlers can run with `net: none`).
+- Document new routes and contracts in `docs/rest-guide.md` or ADRs.
 
-## Example handler
+## Example snippet
 
 ```ts
-export async function handleHello(input: unknown, ctx: HandlerContext = {}) {
-  const parsed = HelloRequestSchema.parse((input ?? {}) as Partial<HelloRequest>);
-  const greeting = createGreetingUseCase({ name: parsed.name });
-  ctx.runtime?.log?.('info', 'Hello REST endpoint executed', {
-    requestId: ctx.requestId,
-    target: greeting.target,
-  });
-  const response = { message: greeting.message, target: greeting.target };
-  return HelloResponseSchema.parse(response);
+export async function handleDocsPlan(input: unknown, ctx: HandlerContext = {}) {
+  const parsed = DocsPlanRequestSchema.parse(input ?? {});
+  const plan = await planDocs({ profile: parsed.profile }, ctx.services);
+  ctx.runtime?.log?.('info', 'REST plan requested', { profile: parsed.profile });
+  return DocsPlanResponseSchema.parse(plan);
 }
 ```
 
-Follow this pattern for new routes and keep business logic inside application use-cases for easier testing.
-
-
+This pattern keeps routing logic tiny and delegates heavy work to existing use-cases, preserving testability.

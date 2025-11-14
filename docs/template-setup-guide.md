@@ -1,93 +1,94 @@
-# Template Setup Guide
+# Setup & Bootstrap Guide
 
-This walkthrough assumes you clicked **“Use this template”** (or cloned the repo) and want to turn it into your own KB Labs plugin.
+This walkthrough explains what happens during `kb ai-docs setup` and how to prepare a workspace for AI Docs.
 
 ## 0. Prerequisites
 
-- Node.js ≥ 20 and pnpm ≥ 9
-- Access to the KB Labs DevKit repository (pulled automatically on `pnpm install`)
+- Node.js ≥ 20, pnpm ≥ 9
+- Local clones of `kb-labs-plugin`, `kb-labs-setup-engine`, and `kb-labs-devkit` (linked via pnpm workspaces)
 
-## 1. Rename the plugin
-
-Pick a final package ID, e.g. `@kb-labs/my-awesome-plugin`. Update the following locations:
-
-| File | What to change | Example |
-| ---- | -------------- | ------- |
-| `packages/plugin-cli/package.json` | `"name"` and references inside `"exports"`/`"kb"` | `@kb-labs/my-awesome-plugin` |
-| `packages/plugin-cli/src/manifest.v2.ts` | `id`, display name/description if needed | `id: '@kb-labs/my-awesome-plugin'` |
-| `packages/contracts/package.json` | `"name"` | `@kb-labs/my-awesome-plugin-contracts` |
-| `packages/contracts/src/contract.ts` | `pluginId` | `pluginId: '@kb-labs/my-awesome-plugin'` |
-| `packages/contracts/src/version.ts` | Bump `contractsVersion` if desired | `export const contractsVersion = '1.0.0'` |
-| `tsconfig.paths.json` | Alias paths | `@kb-labs/my-awesome-plugin` + `@kb-labs/my-awesome-plugin-contracts` |
-| Any docs/tests | Replace textual references to `plugin-template` |
-
-> Tip: search for `plugin-template` and `template.hello` to catch leftovers.
-
-## 2. Decide which surfaces you ship
-
-The template enables CLI, REST, and Studio out of the box. Keep only what you need:
-
-- **CLI only**: keep `src/cli` and related tests; remove `src/rest`, `src/studio`, and their exports/tests. Delete REST/Studio entries in `manifest.v2.ts`.
-- **REST only**: keep `src/rest`; remove CLI/Studio directories + manifest sections; update sandbox scripts if desired.
-- **Studio**: keep `src/studio`; remove other surfaces as needed.
-
-Update `pluginContractsManifest` accordingly. Each missing surface can omit its section (`commands`, `workflows`, `api`) entirely.
-
-## 3. Define your contracts
-
-1. Edit `packages/contracts/src/contract.ts` to describe real artifacts (files, logs, JSON payloads).
-2. Add/adjust schemas in `packages/contracts/src/schema.ts` (or create new files) for inputs/outputs.
-3. Reference those schema IDs from CLI/REST/Studio implementations to avoid hard-coded strings.
-4. Update the README snippet in `packages/contracts/README.md` to reflect your use case.
-
-## 4. Sync runtime code with contracts
-
-- Replace the sample greeting logic with your own use-cases in `packages/plugin-cli/src/application` and `src/domain`.
-- Ensure commands/handlers/studio widgets use IDs from `pluginContractsManifest`.
-- Update tests in `packages/plugin-cli/tests` (CLI and REST) to match new behaviour. Keep assertions on artifacts if applicable.
-
-## 5. Run checks
+## 1. Run setup
 
 ```bash
-pnpm install               # triggers devkit sync – expect config updates on first run
-pnpm build
-pnpm test
-pnpm --filter @kb-labs/my-awesome-plugin-contracts test
-pnpm --filter @kb-labs/my-awesome-plugin-contracts type-check
-pnpm --filter @kb-labs/my-awesome-plugin lint
+kb ai-docs setup
 ```
 
-> Seeing diffs after `pnpm install` is normal — DevKit sync realigns lint/ts configs. Commit those changes with your first scaffold commit.
+The handler (`packages/ai-docs-plugin/src/setup/handler.ts`) will:
 
-## 6. Update documentation
+- create `.kb/ai-docs/` with README, profiles, and gitkeep;
+- add an `aiDocs` section to `kb.config.json`;
+- suggest npm scripts (`ai-docs:init|plan|audit`);
+- ensure `plugins.ai-docs.enabled = true`.
 
-- Replace template descriptions in `README.md`, `docs/overview.md`, and other guides to reflect your plugin’s purpose.
-- Document how consumers should use your plugin (CLI flags, REST request fields, produced artifacts).
+All filesystem/config operations are declared via `SetupBuilder`, so setup-engine can diff/rollback them.
 
-## 7. Optional extras
+## 2. Inspect `kb.config.json`
 
-- Remove unused sandbox scripts in `scripts/sandbox`.
-- Add CI workflows or package publishing scripts.
-- Introduce additional packages under `packages/` if your plugin is split into multiple deployable pieces.
+After setup you should see:
 
-## 8. Keep DevKit up to date
+```jsonc
+"aiDocs": {
+  "sources": { "codeGlobs": ["src/**/*.{ts,tsx,js,jsx}", "package.json"], ... },
+  "output": { "basePath": "docs/ai-docs", "format": "md" },
+  "style": { "language": "en", "formality": "neutral" },
+  "provider": { "mindProfile": "default", "llmProfile": "mock" },
+  "thresholds": { "driftScoreMinimum": 70, "maxChangesPerRun": 25 }
+}
+```
 
-- Bump `@kb-labs/devkit` versions in the root and package `package.json` files when a new release is published.
-- Run `pnpm install` followed by `pnpm devkit:sync` (or `pnpm devkit:force` for a clean overwrite).
-- Review and commit the updated lint/tsconfig/tooling files alongside the version bump.
+Tweak the values (language, globs, thresholds) to match your project conventions.
 
-## Reference: Where identifiers live
+## 3. Scaffold docs
 
-| Identifier | Purpose | Location |
-| ---------- | ------- | -------- |
-| `@kb-labs/<plugin>` | Main plugin package name | `packages/plugin-cli/package.json`, `manifest.v2.ts`, `tsconfig.paths.json`, tests/docs |
-| `@kb-labs/<plugin>-contracts` | Contracts package name | `packages/contracts/package.json`, `tsconfig.paths.json`, imports across the repo |
-| `template:hello` | Command ID example | `manifest.v2.ts`, `contract.ts`, CLI code/tests |
-| `template.rest.hello` | REST route ID example | `contract.ts`, REST handler/tests |
-| `template.hello.greeting` | Artifact ID example | `contract.ts`, CLI/REST logging/tests |
+```bash
+kb ai-docs init --docs-path docs/ai-docs
+```
 
-Review this table whenever you rename IDs to ensure consistency across contracts, manifest, implementation, and tests.
+Creates the starter files (`overview.md`, `architecture.md`, `getting-started.md`, `conventions.md`) and syncs the config.
 
-- Update `tsconfig.paths.json` by running `pnpm devkit:paths` after renaming packages so the workspace aliases point to the new paths (TypeScript uses it to resolve `@kb-labs/...` imports across repos).
-- Keep documentation and README snippets consistent with the new naming, so future contributors immediately understand your plugin surface.
+## 4. Plan → Generate → Audit loop
+
+1. `kb ai-docs plan` — writes `.kb/ai-docs/plan.json` and highlights gaps.
+2. `kb ai-docs generate --dry-run` — saves proposals to `.kb/artifacts/ai-docs/suggestions/`.
+3. `kb ai-docs audit` — calculates drift-score and stores `drift.(json|md)`.
+
+Every command supports `--json` and `--dry-run` so you can integrate with CI safely.
+
+> Using workflow engine? Instead of CLI calls, import `runPlanWorkflow`, `runGenerateWorkflow`, or `runAuditWorkflow` from `@kb-labs/ai-docs-plugin/src/workflows/*` and pass the same options you’d provide via flags. Handlers emit identical artifacts.
+
+## 5. Where artifacts live
+
+| File/Directory | Purpose |
+| --- | --- |
+| `.kb/ai-docs/plan.json` | Current TOC with section statuses |
+| `.kb/ai-docs/metadata/*.json` | Generation metadata (strategy, confidence, timestamps) |
+| `.kb/ai-docs/drift.(json|md)` | Drift reports for humans + automation |
+| `.kb/artifacts/ai-docs/` | Dry-run / suggest-only outputs |
+| `docs/ai-docs/*` | The actual documentation checked into the repo |
+
+## 6. Keeping DevKit up to date
+
+1. `pnpm install`
+2. `pnpm devkit:paths`
+3. `pnpm devkit:sync`
+4. `pnpm --filter @kb-labs/ai-docs-plugin run build`
+5. `pnpm --filter @kb-labs/ai-docs-contracts test`
+
+## 7. Customising AI Docs
+
+- Contracts: edit `packages/ai-docs-contracts/src/contract.ts` + `schema.ts` when artifact/command shapes change.
+- Manifest/setup: review fs permissions, setup handler strings, and CLI metadata whenever you add commands.
+- Docs: update `README.md`, `docs/overview.md`, `docs/getting-started.md` whenever UX or workflows change.
+- Tests: add smoke coverage for new use-cases, setup operations, and adapters.
+
+## 8. Handy commands
+
+| Command | Description |
+| --- | --- |
+| `pnpm --filter @kb-labs/ai-docs-plugin run build` | Build CLI/manifest/setup bundles |
+| `pnpm --filter @kb-labs/ai-docs-plugin test` | Run Vitest suite |
+| `pnpm --filter @kb-labs/ai-docs-contracts test` | Validate contracts schemas |
+| `pnpm kb ai-docs:<cmd>` | Execute CLI commands via kb runtime (init/plan/generate/audit) |
+
+Follow these steps to keep AI Docs onboarding smooth while you customise content, strategies, or integrations.
 

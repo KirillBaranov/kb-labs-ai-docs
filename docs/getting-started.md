@@ -1,6 +1,6 @@
 # Getting Started
 
-Follow these steps to explore and extend the KB Labs Plugin Template.
+This guide walks through the quickest way to exercise AI Docs locally: install → build → init/plan/generate/audit.
 
 ## 1. Install dependencies
 
@@ -8,87 +8,83 @@ Follow these steps to explore and extend the KB Labs Plugin Template.
 pnpm install
 ```
 
-This runs `devkit:sync` automatically to align local configs with the latest presets.
+`devkit:sync` runs automatically, so ESLint/TS/Vitest configs stay aligned with the KB Labs presets.
 
-## 2. Build the sample plugin
-
-```bash
-pnpm --filter @kb-labs/plugin-template-cli run build
-```
-
-You will find compiled assets in `packages/plugin-cli/dist/`.
-
-## 3. Run the HelloWorld command
+## 2. Build the plugin
 
 ```bash
-node packages/plugin-cli/dist/cli/commands/hello/run.js --name Developer
+pnpm --filter @kb-labs/ai-docs-plugin run build
 ```
 
-Expected output:
+Artifacts land in `packages/ai-docs-plugin/dist/` and are consumed by the plugin runtime/CLI.
 
-```
-Hello, Developer!
-```
-
-Add `--json` to see the structured payload emitted by the command.
-
-## 4. Hit the REST endpoint locally
-
-Use the REST sandbox:
+## 3. Bootstrap documentation
 
 ```bash
-pnpm sandbox:rest Developer
+pnpm kb ai-docs:init --docs-path docs/ai-docs --format md --language en --json
 ```
 
-Expected console log:
+Creates `docs/ai-docs/*` starters, seeds `kb.config.json`, and prints a JSON payload describing created files.
 
-```
-REST response: { message: 'Hello, Developer!', target: 'Developer' }
-```
-
-It also prints the structured log emitted by the handler.
-
-## 5. Render the Studio widget
+## 4. Plan / restructure
 
 ```bash
-pnpm sandbox:studio Developer
+pnpm kb ai-docs:plan --profile internal --json
 ```
 
-The script renders the widget to static markup so you can quickly check the layout:
+Writes `.kb/ai-docs/plan.json` plus counts/gaps. The `--json` flag is perfect for CI annotations.
 
+## 5. Generate (w/ dry-run)
+
+```bash
+pnpm kb ai-docs:generate --strategy append --dry-run --json
 ```
-<section ...>Hello, Developer! ...</section>
+
+Mock LLMs prepare content and store metadata without touching docs. Drop `--dry-run` (or switch to `--suggest-only`) when you are ready to apply changes.
+
+## 6. Audit drift
+
+```bash
+pnpm kb ai-docs:audit --json
 ```
 
-If you need to preview visuals, import `HelloWidget` into a React playground and reuse the same props.
+Produces `.kb/ai-docs/drift.(json|md)` plus drift scores/outdated counts in the terminal.
 
----
+## 7. Run via workflow engine
 
-### Sandbox summary
+If you prefer Workflow specs to CLI calls, reference the exported handlers:
 
-| Command | Purpose | Notes |
-|---------|---------|-------|
-| `pnpm sandbox:cli` | Runs the compiled CLI command | Pass `--name` and `--json`; prints returned payload after command execution |
-| `pnpm sandbox:rest` | Executes the REST handler directly | Accepts an optional name argument; logs mimic plugin runtime |
-| `pnpm sandbox:studio` | Renders the Studio widget to static markup | Useful for snapshot review; run after `pnpm build` |
+```ts
+import { runPlanWorkflow, runGenerateWorkflow, runAuditWorkflow } from '@kb-labs/ai-docs-plugin';
+
+await runPlanWorkflow({ profile: 'internal' }, { services });
+await runGenerateWorkflow({ strategy: 'append', dryRun: true }, { services });
+await runAuditWorkflow({}, { services });
+```
+
+Each handler accepts the same options as the CLI commands and emits the documented artifacts, making it easy to wire AI Docs into CI/CD pipelines.
 
 ### Troubleshooting
 
-- `Build artifacts missing`: run `pnpm --filter @kb-labs/plugin-template-cli run build` before the sandbox command.
-- Permission errors: double-check `manifest.v2.ts` permissions if you modify the handler to read files or env variables.
-- Manifest drift: see [`docs/faq.md`](./faq.md) for the manifest change checklist.
+- `Build artifacts missing` — run `pnpm --filter @kb-labs/ai-docs-plugin run build` before executing `pnpm kb ai-docs:*`.
+- `Permission denied` — tweak fs allow/deny patterns in `manifest.v2.ts` if you need writes outside `.kb/`.
+- `Invalid aiDocs config` — inspect the `aiDocs` section in `kb.config.json` (schema lives in `packages/ai-docs-contracts`).
 
 ---
 
-## 6. Iterate with tests
+## 8. Tests
 
 ```bash
-pnpm --filter @kb-labs/plugin-template-cli test
+pnpm --filter @kb-labs/ai-docs-plugin test
 ```
 
-Vitest runs CLI and REST smoke tests located in `packages/plugin-cli/tests/`.
+Vitest is configured via `packages/ai-docs-plugin/vitest.config.ts`. Add smoke tests for use-cases/CLI as new behaviour appears.
 
 ---
 
-For deeper dives, check the CLI/REST/Studio guides in this repository.
+See also:
+
+- [`docs/overview.md`](./overview.md) — product context and goals.
+- [`docs/template-setup-guide.md`](./template-setup-guide.md) — setup workflow walkthrough.
+- [`docs/architecture.md`](./architecture.md) — layering and dependency rules.
 

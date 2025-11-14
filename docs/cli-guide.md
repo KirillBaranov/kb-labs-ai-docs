@@ -1,46 +1,72 @@
 # CLI Guide
 
-This guide explains how to add or modify CLI commands in the plugin template.
+AI Docs ships four production commands exposed through `kb ai-docs:*`. This guide explains what each command does today and how to extend the CLI layer safely.
 
-## Folder structure
+## Command overview
 
-```
-packages/plugin-cli/src/cli/
-└── commands/
-    └── hello/
-        └── run.ts
-```
+| Command | Purpose | Notable flags |
+| --- | --- | --- |
+| `ai-docs:init` | Scaffold docs + config | `--docs-path`, `--format`, `--language`, `--profile`, `--json` |
+| `ai-docs:plan` | Analyse sources/docs, emit plan | `--profile`, `--plan-path`, `--json` |
+| `ai-docs:generate` | Fill/update sections from plan | `--strategy`, `--sections`, `--plan-path`, `--dry-run`, `--suggest-only`, `--json` |
+| `ai-docs:audit` | Compute drift score and reports | `--from`, `--to`, `--json` |
 
-Each command lives inside its own folder and exports a `run*` function. The function should:
+All commands accept `--json` for machine-readable output (used by CI and workflow-engine integrations).
 
-1. Accept a serialisable args object (parsed by the host CLI).
-2. Return a serialisable payload (used by tests and potential API consumers).
-3. Write to the provided `stdout` stream and optionally log via the injected logger.
+## Command anatomy
 
-## Creating a new command
+Each handler lives in `packages/ai-docs-plugin/src/cli/commands/<name>/run.ts` and exports a `run<Name>Command` function that:
 
-1. Duplicate the `hello` command folder and rename it to match your command id (e.g. `templates/build`).
-2. Implement `runYourCommand` to perform the desired logic. Call application use-cases instead of embedding business logic in the command file.
-3. Add the handler to `src/manifest.v2.ts` with metadata (`describe`, `flags`, `examples`).
-4. Update `tsup.config.ts` `entry` array to include the new command file.
-5. Add tests under `packages/plugin-cli/tests/cli/` validating console output and return payloads.
+1. Normalises CLI flags into a typed args object.
+2. Resolves application services via `resolveContext`.
+3. Invokes the appropriate use-case (`initDocs`, `planDocs`, `generateDocs`, `auditDocs`).
+4. Writes human output to `stdout` unless `--json` is set.
+5. Returns the use-case payload for tests / JSON mode.
 
-## Command context helpers
+Keep handlers thin—business logic belongs to application/domain layers.
 
-- `@app/application`: use-cases that orchestrate domain logic.
-- `@app/infrastructure`: adapters (e.g. logger, fs) to integrate with the runtime.
-- `@app/shared`: shared constants / helpers.
+## Adding or updating commands
 
-## Testing guidelines
+1. Create a new folder under `src/cli/commands/<id>/`.
+2. Implement `run<Id>Command` that:
+   - parses flags (strings/booleans/arrays);
+   - calls the corresponding use-case;
+   - writes to `stdout` and returns the payload.
+3. Register the command in `src/manifest.v2.ts` (describe, flags, handler path, permissions).
+4. Add the file to `tsup.config.ts` `entry` array so it’s bundled.
+5. Export the handler from `src/index.ts` if other plugins should import it programmatically.
+6. Write Vitest coverage in `packages/ai-docs-plugin/tests/cli/`.
 
-Use Vitest to assert both the returned payload and stdout interactions:
+## Common helpers
+
+- `resolveContext` wires default services (logger, config store, docs fs, Mind client, mock LLM).
+- `services.workflow?.emit` is available inside use-cases—handlers simply forward args.
+- Domain/application types live under `@app/*` aliases for autocomplete.
+
+## Testing CLI handlers
+
+Use Vitest to verify both return payloads and emitted text:
 
 ```ts
-const write = vi.fn();
-const result = await runMyCommand(args, { stdout: { write } as any });
-expect(result).toMatchObject({...});
-expect(write).toHaveBeenCalledWith('Expected output\n');
+import { runPlanCommand } from '../../src/cli/commands/plan/run';
+
+test('plan prints summary', async () => {
+  const write = vi.fn();
+  const result = await runPlanCommand(
+    { json: true },
+    { stdout: { write } as any }
+  );
+
+  expect(result.sections).toBeGreaterThan(0);
+  expect(write).toHaveBeenCalledWith(expect.stringMatching(/plan/i));
+});
 ```
 
-Add negative cases to confirm argument validation behaviour when applicable.
+For end-to-end smoke tests, invoke the command through the kb runtime:
+
+```bash
+pnpm kb ai-docs:plan --json
+```
+
+This exercises the compiled bundle plus manifest wiring exactly as users will.
 
