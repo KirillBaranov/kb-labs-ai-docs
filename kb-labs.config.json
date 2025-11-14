@@ -1,5 +1,44 @@
 {
   "sync": {
     "enabled": true
+  },
+  "aiDocs": {
+    "sources": {
+      "codeGlobs": ["src/**/*.{ts,tsx,js,jsx}", "package.json"],
+      "docsGlobs": ["docs/**/*.{md,mdx}", "README.md"],
+      "apiSpecs": []
+    },
+    "output": {
+      "basePath": "docs/ai-docs",
+      "format": "md",
+      "naming": "kebab"
+    },
+    "style": {
+      "language": "en",
+      "formality": "neutral",
+      "preferences": []
+    },
+    "profiles": [
+      {
+        "id": "internal",
+        "description": "Internal engineering handbook profile"
+      }
+    ],
+    "provider": {
+      "mindProfile": "default",
+      "llmProfile": "mock"
+    },
+    "thresholds": {
+      "driftScoreMinimum": 70,
+      "maxChangesPerRun": 25
+    }
+  },
+  "plugins": {
+    "ai-docs": {
+      "enabled": true,
+      "docsPath": "docs/ai-docs",
+      "planPath": ".kb/ai-docs/plan.json",
+      "driftThreshold": 70
+    }
   }
 }

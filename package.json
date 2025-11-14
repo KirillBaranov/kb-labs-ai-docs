@@ -1,8 +1,8 @@
 {
-  "name": "@kb-labs/plugin-template",
-  "version": "0.1.0",
+  "name": "@kb-labs/ai-docs",
+  "version": "0.0.1",
   "private": true,
-  "description": "Reference plugin template for the KB Labs ecosystem with devkit-powered tooling.",
+  "description": "KB Labs AI Docs plugin providing init/plan/generate/audit flows for engineering documentation.",
   "type": "module",
   "author": {
     "name": "Kirill Baranov",
@@ -11,12 +11,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kirill-baranov/kb-labs-plugin-template.git"
+    "url": "https://github.com/kirill-baranov/kb-labs-ai-docs.git"
   },
   "bugs": {
-    "url": "https://github.com/kirill-baranov/kb-labs-plugin-template/issues"
+    "url": "https://github.com/kirill-baranov/kb-labs-ai-docs/issues"
   },
-  "homepage": "https://github.com/kirill-baranov/kb-labs-plugin-template#readme",
+  "homepage": "https://github.com/kirill-baranov/kb-labs-ai-docs#readme",
   "workspaces": [
     "apps/*",
     "packages/*"

@@ -1,6 +1,4 @@
 {
   "files": [],
-  "references": [
-    { "path": "./plugin-cli" }
-  ]
+  "references": [{ "path": "./ai-docs-plugin" }]
 }
