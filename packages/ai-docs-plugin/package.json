@@ -39,6 +39,9 @@
   },
   "dependencies": {
     "@kb-labs/ai-docs-contracts": "link:../ai-docs-contracts",
+    "@kb-labs/cli-command-kit": "workspace:*",
+    "@kb-labs/cli-core": "link:../../../kb-labs-cli/packages/core",
+    "@kb-labs/core-sys": "link:../../../kb-labs-core/packages/sys",
     "@kb-labs/plugin-manifest": "link:../../../kb-labs-plugin/packages/manifest",
     "@kb-labs/setup-operations": "link:../../../kb-labs-setup-engine/packages/setup-operations",
     "zod": "^3.25.8"

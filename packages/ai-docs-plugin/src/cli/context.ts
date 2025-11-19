@@ -7,9 +7,16 @@ import {
   createConsoleLogger
 } from '../infra/index.js';
 
+import type { Output } from '@kb-labs/core-sys/output';
+import type { Logger } from '@kb-labs/core-sys/logging';
+// @ts-expect-error - types will be available after command-kit types are generated
+import type { CliContext } from '@kb-labs/cli-core';
+
 export interface AiDocsCliContext {
   services?: AiDocsApplicationServices;
-  stdout?: NodeJS.WritableStream;
+  output?: Output;
+  logger?: Logger;
+  cwd?: string;
 }
 
 export function createCliServices(): AiDocsApplicationServices {
@@ -28,10 +35,19 @@ export function createCliServices(): AiDocsApplicationServices {
   };
 }
 
-export function resolveContext(context: AiDocsCliContext = {}): Required<AiDocsCliContext> {
+export function resolveContext(context: AiDocsCliContext = {}): {
+  services: AiDocsApplicationServices;
+  output: CliContext['output'];
+  logger: CliContext['logger'];
+} {
+  if (!context.output) {
+    throw new Error('Output is required. Ensure CliContext with output is passed to command handler.');
+  }
+  
   return {
-    stdout: context.stdout ?? process.stdout,
-    services: context.services ?? createCliServices()
+    services: context.services ?? createCliServices(),
+    output: context.output,
+    logger: context.logger,
   };
 }
 
