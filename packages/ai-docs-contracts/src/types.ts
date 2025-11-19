@@ -1,21 +1,60 @@
-import type { ApiContract } from './types/api.js';
-import type { ArtifactContractsMap } from './types/artifacts.js';
-import type { CommandContractsMap } from './types/commands.js';
-import type { WorkflowContractsMap } from './types/workflows.js';
-import type { ContractsSchemaId } from './version.js';
+// Re-export types for consistency with other contracts packages
+
+export type ArtifactKind = 'file' | 'json' | 'markdown' | 'binary' | 'dir' | 'log' | 'text';
+
+export interface ArtifactExample {
+  summary?: string;
+  payload?: unknown;
+}
+
+export interface PluginArtifactContract {
+  id: string;
+  kind: ArtifactKind;
+  description?: string;
+  pathPattern?: string;
+  mediaType?: string;
+  schemaRef?: string;
+  example?: ArtifactExample;
+}
+
+export type ArtifactContractsMap = Record<string, PluginArtifactContract>;
+
+export interface SchemaReference {
+  ref: string;
+  format?: 'zod' | 'json-schema' | 'openapi';
+  description?: string;
+}
+
+export interface CommandContract {
+  id: string;
+  description?: string;
+  input?: SchemaReference;
+  output?: SchemaReference;
+  produces?: string[];
+  consumes?: string[];
+  examples?: string[];
+}
+
+export type CommandContractsMap = Record<string, CommandContract>;
 
 export interface PluginContracts {
-  schema: ContractsSchemaId;
+  schema: 'kb.plugin.contracts/1';
   pluginId: string;
   contractsVersion: string;
   artifacts: ArtifactContractsMap;
   commands?: CommandContractsMap;
-  workflows?: WorkflowContractsMap;
-  api?: ApiContract;
+  workflows?: Record<string, unknown>;
+  api?: {
+    rest?: {
+      basePath: string;
+      routes: Record<string, {
+        id: string;
+        method: string;
+        path: string;
+        description?: string;
+        request?: SchemaReference;
+        response?: SchemaReference;
+      }>;
+    };
+  };
 }
-
-export type { ApiContract, RestApiContract, RestRouteContract, SchemaReference } from './types/api.js';
-export type { ArtifactKind, ArtifactContractsMap, PluginArtifactContract, ArtifactExample } from './types/artifacts.js';
-export type { CommandContract, CommandContractsMap } from './types/commands.js';
-export type { WorkflowContract, WorkflowContractsMap, WorkflowStepContract } from './types/workflows.js';
-
