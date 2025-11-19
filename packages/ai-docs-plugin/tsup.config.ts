@@ -12,7 +12,8 @@ export default defineConfig({
     'src/cli/commands/generate/run.ts',
     'src/cli/commands/audit/run.ts'
   ],
-  external: ['@kb-labs/plugin-manifest', '@kb-labs/ai-docs-contracts', '@kb-labs/setup-operations'],
+  tsconfig: "tsconfig.build.json", // Use build-specific tsconfig without paths
+  // nodePreset already includes all workspace packages as external via tsup.external.json
   dts: {
     resolve: true,
     skipLibCheck: true

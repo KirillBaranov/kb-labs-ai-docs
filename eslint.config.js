@@ -4,13 +4,15 @@ export default [
   ...nodePreset,
   {
     ignores: [
-      '**/dist/**',
-      '**/coverage/**',
-      '**/node_modules/**',
-      '**/*.d.ts',
       '**/tsup.config.ts',
       '**/vitest.config.ts',
       '**/*.vue'
     ]
+  },
+  {
+    files: ['**/tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+    rules: {
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }]
+    }
   }
 ];

@@ -4,7 +4,7 @@ import type {
   GenerationMetadata
 } from '@kb-labs/ai-docs-contracts';
 
-export interface GenerationResultEntity extends GenerateCommandOutput {}
+export type GenerationResultEntity = GenerateCommandOutput;
 
 export function buildSectionResult(
   partial: Partial<GeneratedSectionResult> & Pick<GeneratedSectionResult, 'sectionId' | 'targetPath'>

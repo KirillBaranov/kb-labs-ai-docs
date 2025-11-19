@@ -19,9 +19,15 @@ export function addDriftEntry(report: DriftReport, entry: DriftEntry): DriftRepo
     ...report.summary
   };
 
-  if (entry.status === 'in-sync') summary.inSync += 1;
-  if (entry.status === 'outdated') summary.outdated += 1;
-  if (entry.status === 'missing') summary.missing += 1;
+  if (entry.status === 'in-sync') {
+    summary.inSync += 1;
+  }
+  if (entry.status === 'outdated') {
+    summary.outdated += 1;
+  }
+  if (entry.status === 'missing') {
+    summary.missing += 1;
+  }
 
   const numerator = summary.inSync;
   const denominator = summary.inSync + summary.outdated + summary.missing || 1;

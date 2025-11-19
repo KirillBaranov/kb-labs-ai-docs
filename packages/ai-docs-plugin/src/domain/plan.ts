@@ -1,6 +1,6 @@
 import type { DocSection, DocsPlan, DocsPlanGap } from '@kb-labs/ai-docs-contracts';
 
-export interface DocsPlanEntity extends DocsPlan {}
+export type DocsPlanEntity = DocsPlan;
 
 export interface SectionTraversalOptions {
   includeChildren?: boolean;
@@ -12,7 +12,9 @@ export function collectSections(plan: DocsPlanEntity, options: SectionTraversalO
 
   const walk = (section: DocSection) => {
     accumulator.push(section);
-    if (!includeChildren || !section.children) return;
+    if (!includeChildren || !section.children) {
+      return;
+    }
     section.children.forEach((child) => walk(child));
   };
 

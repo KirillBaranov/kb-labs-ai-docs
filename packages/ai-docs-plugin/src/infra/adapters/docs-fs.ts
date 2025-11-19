@@ -3,7 +3,6 @@ import { constants as fsConstants } from 'node:fs';
 import { dirname, join, resolve, relative } from 'node:path';
 import type { DocsFsPort } from '../../application/types.js';
 import {
-  AI_DOCS_ROOT,
   METADATA_DIR,
   PLAN_FILE,
   DRIFT_JSON_FILE,
