@@ -44,12 +44,17 @@ type SetupInput = {
 };
 
 type SetupContext = {
+  logger?: {
+    debug: (msg: string, meta?: Record<string, unknown>) => void;
+    info: (msg: string, meta?: Record<string, unknown>) => void;
+    warn: (msg: string, meta?: Record<string, unknown>) => void;
+    error: (msg: string, meta?: Record<string, unknown>) => void;
+  };
   runtime?: {
     fs?: {
       mkdir(path: string, options?: { recursive?: boolean }): Promise<void>;
       writeFile(path: string, data: string, options?: { encoding?: BufferEncoding }): Promise<void>;
     };
-    log?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, meta?: Record<string, unknown>) => void;
     config?: {
       ensureSection?: (pointer: string, value: unknown, options?: { strategy?: 'deep' | 'replace' }) => Promise<void>;
     };
@@ -115,7 +120,7 @@ export async function run(input: SetupInput = {}, ctx: SetupContext = {}) {
       `${KB_DIR}/.gitkeep`,
       '# AI Docs artifacts live here. Generated files should be reviewed before committing.\n'
     );
-    ctx.runtime.log?.('info', 'AI Docs KB directory prepared.');
+    ctx.logger?.info('AI Docs KB directory prepared.');
   }
 
   await ctx.runtime?.config?.ensureSection?.('aiDocs', defaultAiDocsConfig);

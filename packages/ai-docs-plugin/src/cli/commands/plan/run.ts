@@ -63,13 +63,23 @@ export const run = defineCommand<AiDocsPlanFlags, AiDocsPlanResult>({
     if (flags.json) {
       output.json(result);
     } else {
-      output.write([
-        'AI Docs plan ready 📋',
-        `- Plan path: ${result.planPath}`,
-        `- Sections: ${result.sections}`,
-        `- Missing: ${result.missingSections}`,
-        `- Gaps: ${result.gaps.length}`
-      ].join('\n') + '\n');
+      const outputText = ctx.output.ui.sideBox({
+        title: 'AI Docs Plan',
+        sections: [
+          {
+            items: [
+              `${ctx.output.ui.symbols.success} ${ctx.output.ui.colors.success('Plan ready')}`,
+              `Plan path: ${result.planPath}`,
+              `Sections: ${result.sections}`,
+              `Missing: ${result.missingSections}`,
+              `Gaps: ${result.gaps.length}`,
+            ],
+          },
+        ],
+        status: 'success',
+        timing: ctx.tracker.total(),
+      });
+      output.write(outputText);
     }
 
     return { ok: true, result };
@@ -93,13 +103,22 @@ export async function runPlanCommand(args: Partial<PlanDocsInput> & { json?: boo
   if (args.json) {
     output.json(result);
   } else {
-    output.write([
-      'AI Docs plan ready 📋',
-      `- Plan path: ${result.planPath}`,
-      `- Sections: ${result.sections}`,
-      `- Missing: ${result.missingSections}`,
-      `- Gaps: ${result.gaps.length}`
-    ].join('\n') + '\n');
+    const outputText = output.ui.sideBox({
+      title: 'AI Docs Plan',
+      sections: [
+        {
+          items: [
+            `${output.ui.symbols.success} ${output.ui.colors.success('Plan ready')}`,
+            `Plan path: ${result.planPath}`,
+            `Sections: ${result.sections}`,
+            `Missing: ${result.missingSections}`,
+            `Gaps: ${result.gaps.length}`,
+          ],
+        },
+      ],
+      status: 'success',
+    });
+    output.write(outputText);
   }
 
   return result;

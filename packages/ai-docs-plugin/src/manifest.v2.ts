@@ -16,7 +16,7 @@ export const manifest = createManifestV2<typeof pluginContractsManifest>({
   cli: {
     commands: [
       {
-        id: 'ai-docs:init',
+        id: 'init',
         group: 'ai-docs',
         describe: 'Create docs skeleton and aiDocs config section.',
         handler: './cli/commands/init/run#runInitCommand',
@@ -28,7 +28,7 @@ export const manifest = createManifestV2<typeof pluginContractsManifest>({
         ]
       },
       {
-        id: 'ai-docs:plan',
+        id: 'plan',
         group: 'ai-docs',
         describe: 'Analyse project inputs and emit plan.json + TOC.',
         handler: './cli/commands/plan/run#runPlanCommand',
@@ -39,7 +39,7 @@ export const manifest = createManifestV2<typeof pluginContractsManifest>({
         ]
       },
       {
-        id: 'ai-docs:generate',
+        id: 'generate',
         group: 'ai-docs',
         describe: 'Generate/update docs based on plan.json.',
         handler: './cli/commands/generate/run#runGenerateCommand',
@@ -59,7 +59,7 @@ export const manifest = createManifestV2<typeof pluginContractsManifest>({
         ]
       },
       {
-        id: 'ai-docs:audit',
+        id: 'audit',
         group: 'ai-docs',
         describe: 'Compute drift score and produce reports.',
         handler: './cli/commands/audit/run#runAuditCommand',

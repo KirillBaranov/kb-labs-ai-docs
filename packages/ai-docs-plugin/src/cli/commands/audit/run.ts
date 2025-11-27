@@ -63,13 +63,23 @@ export const run = defineCommand<AiDocsAuditFlags, AiDocsAuditResult>({
     if (flags.json) {
       output.json(result);
     } else {
-      output.write([
-        'AI Docs audit finished 🔍',
-        `- Drift score: ${result.driftScore}`,
-        `- Missing sections: ${result.missing}`,
-        `- Outdated sections: ${result.outdated}`,
-        `- Report: ${result.driftPath}`
-      ].join('\n') + '\n');
+      const outputText = ctx.output.ui.sideBox({
+        title: 'AI Docs Audit',
+        sections: [
+          {
+            items: [
+              `${ctx.output.ui.symbols.success} ${ctx.output.ui.colors.success('Audit finished')}`,
+              `Drift score: ${result.driftScore}`,
+              `Missing sections: ${result.missing}`,
+              `Outdated sections: ${result.outdated}`,
+              `Report: ${result.driftPath}`,
+            ],
+          },
+        ],
+        status: 'success',
+        timing: ctx.tracker.total(),
+      });
+      output.write(outputText);
     }
 
     return { ok: true, result };
@@ -93,13 +103,22 @@ export async function runAuditCommand(args: Partial<AuditDocsInput> & { json?: b
   if (args.json) {
     output.json(result);
   } else {
-    output.write([
-      'AI Docs audit finished 🔍',
-      `- Drift score: ${result.driftScore}`,
-      `- Missing sections: ${result.missing}`,
-      `- Outdated sections: ${result.outdated}`,
-      `- Report: ${result.driftPath}`
-    ].join('\n') + '\n');
+    const outputText = output.ui.sideBox({
+      title: 'AI Docs Audit',
+      sections: [
+        {
+          items: [
+            `${output.ui.symbols.success} ${output.ui.colors.success('Audit finished')}`,
+            `Drift score: ${result.driftScore}`,
+            `Missing sections: ${result.missing}`,
+            `Outdated sections: ${result.outdated}`,
+            `Report: ${result.driftPath}`,
+          ],
+        },
+      ],
+      status: 'success',
+    });
+    output.write(outputText);
   }
 
   return result;

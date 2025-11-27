@@ -88,11 +88,21 @@ export const run = defineCommand<AiDocsGenerateFlags, AiDocsGenerateResult>({
     if (flags.json) {
       output.json(result);
     } else {
-      output.write([
-        'AI Docs generation complete ✍️',
-        `- Sections: ${result.sections.length}`,
-        `- Suggestions path: ${result.suggestionsPath ?? 'n/a'}`
-      ].join('\n') + '\n');
+      const outputText = ctx.output.ui.sideBox({
+        title: 'AI Docs Generate',
+        sections: [
+          {
+            items: [
+              `${ctx.output.ui.symbols.success} ${ctx.output.ui.colors.success('Generation complete')}`,
+              `Sections: ${result.sections.length}`,
+              `Suggestions path: ${result.suggestionsPath ?? 'n/a'}`,
+            ],
+          },
+        ],
+        status: 'success',
+        timing: ctx.tracker.total(),
+      });
+      output.write(outputText);
     }
 
     return { ok: true, result };
@@ -125,11 +135,20 @@ export async function runGenerateCommand(
   if (args.json) {
     output.json(result);
   } else {
-    output.write([
-      'AI Docs generation complete ✍️',
-      `- Sections: ${result.sections.length}`,
-      `- Suggestions path: ${result.suggestionsPath ?? 'n/a'}`
-    ].join('\n') + '\n');
+    const outputText = output.ui.sideBox({
+      title: 'AI Docs Generate',
+      sections: [
+        {
+          items: [
+            `${output.ui.symbols.success} ${output.ui.colors.success('Generation complete')}`,
+            `Sections: ${result.sections.length}`,
+            `Suggestions path: ${result.suggestionsPath ?? 'n/a'}`,
+          ],
+        },
+      ],
+      status: 'success',
+    });
+    output.write(outputText);
   }
 
   return result;

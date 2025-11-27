@@ -70,12 +70,22 @@ export const run = defineCommand<AiDocsInitFlags, AiDocsInitResult>({
     if (flags.json) {
       output.json(result);
     } else {
-      output.write([
-        'AI Docs initialization complete ✅',
-        `- Docs path: ${result.docsPath}`,
-        `- Created files: ${result.createdFiles.length}`,
-        `- Profile: ${result.profile}`
-      ].join('\n') + '\n');
+      const outputText = ctx.output.ui.sideBox({
+        title: 'AI Docs Init',
+        sections: [
+          {
+            items: [
+              `${ctx.output.ui.symbols.success} ${ctx.output.ui.colors.success('Initialization complete')}`,
+              `Docs path: ${result.docsPath}`,
+              `Created files: ${result.createdFiles.length}`,
+              `Profile: ${result.profile}`,
+            ],
+          },
+        ],
+        status: 'success',
+        timing: ctx.tracker.total(),
+      });
+      output.write(outputText);
     }
 
     return { ok: true, result };
@@ -98,12 +108,21 @@ export async function runInitCommand(args: Partial<InitDocsInput> & { json?: boo
   if (args.json) {
     output.json(result);
   } else {
-    output.write([
-      'AI Docs initialization complete ✅',
-      `- Docs path: ${result.docsPath}`,
-      `- Created files: ${result.createdFiles.length}`,
-      `- Profile: ${result.profile}`
-    ].join('\n') + '\n');
+    const outputText = output.ui.sideBox({
+      title: 'AI Docs Init',
+      sections: [
+        {
+          items: [
+            `${output.ui.symbols.success} ${output.ui.colors.success('Initialization complete')}`,
+            `Docs path: ${result.docsPath}`,
+            `Created files: ${result.createdFiles.length}`,
+            `Profile: ${result.profile}`,
+          ],
+        },
+      ],
+      status: 'success',
+    });
+    output.write(outputText);
   }
 
   return result;
