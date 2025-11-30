@@ -1,5 +1,5 @@
-export * from './config.js';
-export * from './plan.js';
-export * from './generation.js';
-export * from './drift.js';
+export * from './config';
+export * from './plan';
+export * from './generation';
+export * from './drift';
 

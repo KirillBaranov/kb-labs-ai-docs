@@ -1,11 +1,11 @@
-import type { AiDocsApplicationServices } from '../application/index.js';
+import type { AiDocsApplicationServices } from '../application/index';
 import {
   createConfigStore,
   createDocsFs,
   createMockLlms,
   createMockMindClient,
   createConsoleLogger
-} from '../infra/index.js';
+} from '../infra/index';
 
 import type { Output } from '@kb-labs/core-sys/output';
 import type { Logger } from '@kb-labs/core-sys/logging';
