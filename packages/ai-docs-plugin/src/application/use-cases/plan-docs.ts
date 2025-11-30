@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { DOCS_DEFAULT_BASE_PATH, DEFAULT_SECTION_BLUEPRINT } from '../../shared/index.js';
-import { PLAN_FILE } from '../../shared/constants.js';
-import { planSummary } from '../../domain/plan.js';
-import type { AiDocsApplicationServices, PlanDocsInput, PlanDocsOutput } from '../types.js';
-import type { DocsPlanEntity } from '../../domain/plan.js';
+import { DOCS_DEFAULT_BASE_PATH, DEFAULT_SECTION_BLUEPRINT } from '../../shared/index';
+import { PLAN_FILE } from '../../shared/constants';
+import { planSummary } from '../../domain/plan';
+import type { AiDocsApplicationServices, PlanDocsInput, PlanDocsOutput } from '../types';
+import type { DocsPlanEntity } from '../../domain/plan';
 import type { DocSection } from '@kb-labs/ai-docs-contracts';
 
 export async function planDocs(input: PlanDocsInput | undefined, services: AiDocsApplicationServices): Promise<PlanDocsOutput> {

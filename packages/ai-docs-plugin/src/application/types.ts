@@ -8,10 +8,10 @@ import type {
   InitCommandOutput,
   PlanCommandOutput
 } from '@kb-labs/ai-docs-contracts';
-import type { DocsPlanEntity } from '../domain/plan.js';
-import type { GenerationResultEntity } from '../domain/generation.js';
+import type { DocsPlanEntity } from '../domain/plan';
+import type { GenerationResultEntity } from '../domain/generation';
 import type { DriftReport } from '@kb-labs/ai-docs-contracts';
-import type { AiDocsConfigEntity } from '../domain/config.js';
+import type { AiDocsConfigEntity } from '../domain/config';
 
 export interface MindContextRequest {
   profile?: string;

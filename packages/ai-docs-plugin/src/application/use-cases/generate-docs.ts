@@ -1,8 +1,8 @@
-import type { AiDocsApplicationServices, GenerateDocsInput, GenerateDocsOutput } from '../types.js';
-import { DOCS_DEFAULT_BASE_PATH } from '../../shared/index.js';
-import { PLAN_FILE, ARTIFACTS_SUGGESTIONS_DIR } from '../../shared/constants.js';
-import { collectSections } from '../../domain/plan.js';
-import { planDocs } from './plan-docs.js';
+import type { AiDocsApplicationServices, GenerateDocsInput, GenerateDocsOutput } from '../types';
+import { DOCS_DEFAULT_BASE_PATH } from '../../shared/index';
+import { PLAN_FILE, ARTIFACTS_SUGGESTIONS_DIR } from '../../shared/constants';
+import { collectSections } from '../../domain/plan';
+import { planDocs } from './plan-docs';
 
 export async function generateDocs(input: GenerateDocsInput | undefined, services: AiDocsApplicationServices): Promise<GenerateDocsOutput> {
   const config = (await services.configStore.load()) ?? undefined;

@@ -1,6 +1,6 @@
-import { DOCS_DEFAULT_BASE_PATH } from '../../shared/constants.js';
-import { createDefaultConfig } from '../../domain/config.js';
-import type { AiDocsApplicationServices, InitDocsInput, InitDocsOutput } from '../types.js';
+import { DOCS_DEFAULT_BASE_PATH } from '../../shared/constants';
+import { createDefaultConfig } from '../../domain/config';
+import type { AiDocsApplicationServices, InitDocsInput, InitDocsOutput } from '../types';
 
 const DEFAULT_FILES: Record<string, string> = {
   'overview.md': '# Project Overview\n\nDescribe the mission and scope.\n',

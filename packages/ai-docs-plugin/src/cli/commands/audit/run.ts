@@ -1,7 +1,7 @@
-import { defineCommand, type CommandResult } from '@kb-labs/cli-command-kit';
-import type { AuditDocsInput, AuditDocsOutput } from '../../../application/index.js';
-import { auditDocs } from '../../../application/index.js';
-import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context.js';
+import { defineCommand, type CommandResult } from '@kb-labs/shared-command-kit';
+import type { AuditDocsInput, AuditDocsOutput } from '../../../application/index';
+import { auditDocs } from '../../../application/index';
+import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context';
 
 type AiDocsAuditFlags = {
   from: { type: 'string'; description?: string };

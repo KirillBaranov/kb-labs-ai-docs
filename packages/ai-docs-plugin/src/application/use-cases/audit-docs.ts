@@ -1,6 +1,6 @@
 import type { DriftEntry } from '@kb-labs/ai-docs-contracts';
-import type { AiDocsApplicationServices, AuditDocsInput, AuditDocsOutput } from '../types.js';
-import { createEmptyDriftReport, addDriftEntry } from '../../domain/drift.js';
+import type { AiDocsApplicationServices, AuditDocsInput, AuditDocsOutput } from '../types';
+import { createEmptyDriftReport, addDriftEntry } from '../../domain/drift';
 
 export async function auditDocs(input: AuditDocsInput | undefined, services: AiDocsApplicationServices): Promise<AuditDocsOutput> {
   services.workflow?.emit({
