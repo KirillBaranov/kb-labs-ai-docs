@@ -4,7 +4,7 @@
  */
 
 import { getLogger, type Logger as CoreLogger } from '@kb-labs/core-sys/logging';
-import type { LoggerPort } from '../../application/types.js';
+import type { LoggerPort } from '../../application/types';
 
 export interface ConsoleLoggerOptions {
   scope?: string;

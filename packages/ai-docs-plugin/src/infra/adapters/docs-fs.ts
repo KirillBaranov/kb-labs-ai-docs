@@ -1,7 +1,7 @@
 import { mkdir, writeFile, rm, readFile, access, copyFile } from 'node:fs/promises';
 import { constants as fsConstants } from 'node:fs';
 import { dirname, join, resolve, relative } from 'node:path';
-import type { DocsFsPort } from '../../application/types.js';
+import type { DocsFsPort } from '../../application/types';
 import {
   METADATA_DIR,
   PLAN_FILE,
@@ -9,7 +9,7 @@ import {
   DRIFT_MARKDOWN_FILE,
   ARTIFACTS_SUGGESTIONS_DIR,
   AI_DOCS_BACKUP_DIR
-} from '../../shared/constants.js';
+} from '../../shared/constants';
 
 export function createDocsFs(): DocsFsPort {
   return {

@@ -1,4 +1,4 @@
-import type { MindContextRequest, MindContextSnapshot } from '../../application/types.js';
+import type { MindContextRequest, MindContextSnapshot } from '../../application/types';
 
 export interface MindClient {
   fetchContext(request: MindContextRequest): Promise<MindContextSnapshot>;

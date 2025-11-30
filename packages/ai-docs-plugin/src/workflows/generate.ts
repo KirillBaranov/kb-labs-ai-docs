@@ -1,6 +1,6 @@
-import type { AiDocsApplicationServices } from '../application/index.js';
-import { planDocs } from '../application/use-cases/plan-docs.js';
-import { generateDocs } from '../application/use-cases/generate-docs.js';
+import type { AiDocsApplicationServices } from '../application/index';
+import { planDocs } from '../application/use-cases/plan-docs';
+import { generateDocs } from '../application/use-cases/generate-docs';
 
 export interface GenerateWorkflowInput {
   profile?: string;

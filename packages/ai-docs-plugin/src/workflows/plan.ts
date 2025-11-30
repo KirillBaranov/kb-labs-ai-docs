@@ -1,5 +1,5 @@
-import type { AiDocsApplicationServices } from '../application/index.js';
-import { planDocs } from '../application/use-cases/plan-docs.js';
+import type { AiDocsApplicationServices } from '../application/index';
+import { planDocs } from '../application/use-cases/plan-docs';
 
 export interface PlanWorkflowInput {
   profile?: string;

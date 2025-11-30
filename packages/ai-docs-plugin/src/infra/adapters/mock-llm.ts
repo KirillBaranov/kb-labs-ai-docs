@@ -1,5 +1,5 @@
-import type { MockLlmsPort } from '../../application/types.js';
-import { buildSectionResult } from '../../domain/generation.js';
+import type { MockLlmsPort } from '../../application/types';
+import { buildSectionResult } from '../../domain/generation';
 
 export function createMockLlms(): MockLlmsPort {
   return {

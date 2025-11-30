@@ -1,6 +1,6 @@
-import type { AiDocsApplicationServices } from '../application/index.js';
-import { planDocs } from '../application/use-cases/plan-docs.js';
-import { auditDocs } from '../application/use-cases/audit-docs.js';
+import type { AiDocsApplicationServices } from '../application/index';
+import { planDocs } from '../application/use-cases/plan-docs';
+import { auditDocs } from '../application/use-cases/audit-docs';
 
 export interface AuditWorkflowInput {
   profile?: string;
