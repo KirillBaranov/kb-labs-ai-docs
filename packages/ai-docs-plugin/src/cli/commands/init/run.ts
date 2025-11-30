@@ -1,7 +1,7 @@
-import { defineCommand, type CommandResult } from '@kb-labs/cli-command-kit';
-import type { InitDocsInput, InitDocsOutput } from '../../../application/index.js';
-import { initDocs } from '../../../application/index.js';
-import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context.js';
+import { defineCommand, type CommandResult } from '@kb-labs/shared-command-kit';
+import type { InitDocsInput, InitDocsOutput } from '../../../application/index';
+import { initDocs } from '../../../application/index';
+import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context';
 
 type AiDocsInitFlags = {
   'docs-path': { type: 'string'; description?: string };

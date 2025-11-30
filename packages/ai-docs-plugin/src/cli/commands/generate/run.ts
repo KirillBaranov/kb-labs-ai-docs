@@ -1,7 +1,7 @@
-import { defineCommand, type CommandResult } from '@kb-labs/cli-command-kit';
-import type { GenerateDocsInput, GenerateDocsOutput } from '../../../application/index.js';
-import { generateDocs } from '../../../application/index.js';
-import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context.js';
+import { defineCommand, type CommandResult } from '@kb-labs/shared-command-kit';
+import type { GenerateDocsInput, GenerateDocsOutput } from '../../../application/index';
+import { generateDocs } from '../../../application/index';
+import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context';
 
 type AiDocsGenerateFlags = {
   strategy: { type: 'string'; description?: string; choices?: readonly string[] };

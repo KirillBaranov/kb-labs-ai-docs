@@ -1,7 +1,7 @@
-import { defineCommand, type CommandResult } from '@kb-labs/cli-command-kit';
-import type { PlanDocsInput, PlanDocsOutput } from '../../../application/index.js';
-import { planDocs } from '../../../application/index.js';
-import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context.js';
+import { defineCommand, type CommandResult } from '@kb-labs/shared-command-kit';
+import type { PlanDocsInput, PlanDocsOutput } from '../../../application/index';
+import { planDocs } from '../../../application/index';
+import { resolveContext, createCliServices, type AiDocsCliContext } from '../../context';
 
 type AiDocsPlanFlags = {
   profile: { type: 'string'; description?: string };
