@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { createDefaultConfig, validateConfig } from '../../domain/config.js';
-import type { ConfigStorePort } from '../../application/types.js';
+import { createDefaultConfig, validateConfig } from '../../domain/config';
+import type { ConfigStorePort } from '../../application/types';
 
 const CONFIG_PATH = 'kb.config.json';
 
