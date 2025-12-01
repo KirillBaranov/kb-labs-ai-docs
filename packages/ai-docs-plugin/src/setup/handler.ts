@@ -1,4 +1,4 @@
-import { SetupBuilder } from '@kb-labs/setup-operations';
+import { SetupBuilder } from '@kb-labs/setup-engine-operations';
 
 const KB_DIR = '.kb/ai-docs';
 const PROFILE_PATH = `${KB_DIR}/profiles/default.json`;
